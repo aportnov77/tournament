@@ -105,5 +105,6 @@ class AppServiceProvider extends ServiceProvider
                      AllWeeksQuery::class => AllWeeksQueryHandler::class,
 //                     AllWeeksResultQuery::class => AllWeeksResultQueryHandler::class,
                  ]);
+
     }
 }
