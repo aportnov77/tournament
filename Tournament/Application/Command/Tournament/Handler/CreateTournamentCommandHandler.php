@@ -24,7 +24,6 @@ class CreateTournamentCommandHandler
         $this->tournamentTableCreator = $tournamentTableCreator;
     }
 
-
     public function __invoke(CreateTournamentCommand $command)
     {
         $tournament = new Tournament($command->getTournamentUuid());
@@ -34,10 +33,15 @@ class CreateTournamentCommandHandler
         $teams[] = $tournament->addTeam((string)Str::uuid(), 'Chelsea', rand(6, 10));
         $teams[] = $tournament->addTeam((string)Str::uuid(), 'Arsenal', rand(6, 10));
 
-        DB::transaction(function () use ($teams, $command) {
+        DB::beginTransaction();
+        try {
             $this->repository->saveAll($teams);
             $this->tournamentTableCreator->create($command->getTournamentUuid(), $teams);
-        });
+            DB::commit();
+        } catch (\Throwable $e){
+            //todo log
+            DB::rollBack();
+        }
     }
 
 }
